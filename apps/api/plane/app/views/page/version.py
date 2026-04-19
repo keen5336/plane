@@ -7,13 +7,18 @@ from rest_framework import status
 from rest_framework.response import Response
 
 # Module imports
+from plane.app.middleware.api_authentication import APIKeyAuthentication
+from plane.authentication.session import BaseSessionAuthentication
 from plane.db.models import PageVersion
 from ..base import BaseAPIView
 from plane.app.serializers import PageVersionSerializer, PageVersionDetailSerializer
 from plane.app.permissions import ProjectPagePermission
 
+PAGE_AUTHENTICATION_CLASSES = [APIKeyAuthentication, BaseSessionAuthentication]
+
 
 class PageVersionEndpoint(BaseAPIView):
+    authentication_classes = PAGE_AUTHENTICATION_CLASSES
     permission_classes = [ProjectPagePermission]
 
     def get(self, request, slug, project_id, page_id, pk=None):

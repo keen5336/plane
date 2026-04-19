@@ -30,12 +30,14 @@ from rest_framework import status
 from rest_framework.response import Response
 
 # Module imports
+from plane.app.middleware.api_authentication import APIKeyAuthentication
 from plane.app.permissions import allow_permission, ROLE
 from plane.app.serializers import (
     PageSerializer,
     PageDetailSerializer,
     PageBinaryUpdateSerializer,
 )
+from plane.authentication.session import BaseSessionAuthentication
 from plane.db.models import (
     Page,
     PageLog,
@@ -54,6 +56,8 @@ from plane.bgtasks.page_version_task import track_page_version
 from plane.bgtasks.recent_visited_task import recent_visited_task
 from plane.bgtasks.copy_s3_object import copy_s3_objects_of_description_and_assets
 from plane.app.permissions import ProjectPagePermission
+
+PAGE_AUTHENTICATION_CLASSES = [APIKeyAuthentication, BaseSessionAuthentication]
 
 
 def unarchive_archive_page_and_descendants(page_id, archived_at):
@@ -75,6 +79,7 @@ def unarchive_archive_page_and_descendants(page_id, archived_at):
 class PageViewSet(BaseViewSet):
     serializer_class = PageSerializer
     model = Page
+    authentication_classes = PAGE_AUTHENTICATION_CLASSES
     permission_classes = [ProjectPagePermission]
     search_fields = ["name"]
 
@@ -471,6 +476,7 @@ class PageViewSet(BaseViewSet):
 
 class PageFavoriteViewSet(BaseViewSet):
     model = UserFavorite
+    authentication_classes = PAGE_AUTHENTICATION_CLASSES
 
     @allow_permission([ROLE.ADMIN, ROLE.MEMBER])
     def create(self, request, slug, project_id, page_id):
@@ -496,6 +502,7 @@ class PageFavoriteViewSet(BaseViewSet):
 
 
 class PagesDescriptionViewSet(BaseViewSet):
+    authentication_classes = PAGE_AUTHENTICATION_CLASSES
     permission_classes = [ProjectPagePermission]
 
     def retrieve(self, request, slug, project_id, page_id):
@@ -576,6 +583,7 @@ class PagesDescriptionViewSet(BaseViewSet):
 
 
 class PageDuplicateEndpoint(BaseAPIView):
+    authentication_classes = PAGE_AUTHENTICATION_CLASSES
     permission_classes = [ProjectPagePermission]
 
     def post(self, request, slug, project_id, page_id):
