@@ -276,20 +276,24 @@ export class BasePage extends ExtendedBasePage implements TBasePage {
    */
   update = async (pageData: Partial<TPage>) => {
     const currentPage = this.asJSON;
+    const updatedPage = {
+      ...currentPage,
+      ...pageData,
+    };
     try {
       runInAction(() => {
         Object.keys(pageData).forEach((key) => {
           const currentPageKey = key as keyof TPage;
-          set(this, key, pageData[currentPageKey] || undefined);
+          set(this, key, pageData[currentPageKey]);
         });
       });
 
-      return await this.services.update(currentPage);
+      return await this.services.update(updatedPage);
     } catch (error) {
       runInAction(() => {
         Object.keys(pageData).forEach((key) => {
           const currentPageKey = key as keyof TPage;
-          set(this, key, currentPage?.[currentPageKey] || undefined);
+          set(this, key, currentPage?.[currentPageKey]);
         });
       });
       throw error;

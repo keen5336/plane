@@ -6,6 +6,7 @@
 
 import { useRef } from "react";
 import { observer } from "mobx-react";
+import { CornerDownRight } from "lucide-react";
 import { Logo } from "@plane/propel/emoji-icon-picker";
 import { PageIcon } from "@plane/propel/icons";
 // plane imports
@@ -39,17 +40,26 @@ export const PageListBlock = observer(function PageListBlock(props: TPageListBlo
   if (!page) return null;
   // derived values
   const { name, logo_props, getRedirectionLink } = page;
+  const isSubpage = depth > 0;
 
   return (
     <ListItem
       prependTitleElement={
         <div className="flex items-center" style={{ marginLeft: `${depth * 20}px` }}>
+          {isSubpage && <CornerDownRight className="mr-2 h-3.5 w-3.5 text-tertiary" />}
           {logo_props?.in_use ? (
             <Logo logo={logo_props} size={16} type="lucide" />
           ) : (
             <PageIcon className="h-4 w-4 text-tertiary" />
           )}
         </div>
+      }
+      appendTitleElement={
+        isSubpage ? (
+          <span className="rounded-sm bg-layer-transparent-selected px-1.5 py-0.5 text-11 text-secondary">
+            Subpage
+          </span>
+        ) : undefined
       }
       title={getPageName(name)}
       itemLink={getRedirectionLink()}
