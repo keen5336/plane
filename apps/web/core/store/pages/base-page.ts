@@ -95,6 +95,7 @@ export class BasePage extends ExtendedBasePage implements TBasePage {
   is_favorite: boolean;
   is_locked: boolean;
   archived_at: string | null | undefined;
+  parent: string | null | undefined;
   workspace: string | undefined;
   project_ids?: string[] | undefined;
   created_by: string | undefined;
@@ -132,6 +133,7 @@ export class BasePage extends ExtendedBasePage implements TBasePage {
     this.is_favorite = page?.is_favorite || false;
     this.is_locked = page?.is_locked || false;
     this.archived_at = page?.archived_at || undefined;
+    this.parent = page?.parent ?? undefined;
     this.workspace = page?.workspace || undefined;
     this.project_ids = page?.project_ids || undefined;
     this.created_by = page?.created_by || undefined;
@@ -157,6 +159,7 @@ export class BasePage extends ExtendedBasePage implements TBasePage {
       is_favorite: observable.ref,
       is_locked: observable.ref,
       archived_at: observable.ref,
+      parent: observable.ref,
       workspace: observable.ref,
       project_ids: observable,
       created_by: observable.ref,
@@ -233,6 +236,7 @@ export class BasePage extends ExtendedBasePage implements TBasePage {
       is_favorite: this.is_favorite,
       is_locked: this.is_locked,
       archived_at: this.archived_at,
+      parent: this.parent,
       workspace: this.workspace,
       project_ids: this.project_ids,
       created_by: this.created_by,

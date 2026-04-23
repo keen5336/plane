@@ -47,6 +47,9 @@ export interface IProjectPageStore {
   getCurrentProjectPageIdsByTab: (pageType: TPageNavigationTabs) => string[] | undefined;
   getCurrentProjectPageIds: (projectId: string) => string[];
   getCurrentProjectFilteredPageIdsByTab: (pageType: TPageNavigationTabs) => string[] | undefined;
+  getCurrentProjectFilteredPageTreeByTab: (
+    pageType: TPageNavigationTabs
+  ) => Array<{ pageId: string; depth: number }> | undefined;
   getPageById: (pageId: string) => TProjectPage | undefined;
   updateFilters: <T extends keyof TPageFilters>(filterKey: T, filterValue: TPageFilters[T]) => void;
   clearAllFilters: () => void;
@@ -181,6 +184,60 @@ export class ProjectPageStore implements IProjectPageStore {
     const pages = (filteredPages.map((page) => page.id) as string[]) || undefined;
 
     return pages ?? undefined;
+  });
+
+  getCurrentProjectFilteredPageTreeByTab = computedFn((pageType: TPageNavigationTabs) => {
+    const { projectId } = this.store.router;
+    if (!projectId) return undefined;
+
+    const pagesByType = filterPagesByPageType(pageType, Object.values(this?.data || {}));
+    let filteredPages = pagesByType.filter(
+      (p) =>
+        p.project_ids?.includes(projectId) &&
+        getPageName(p.name).toLowerCase().includes(this.filters.searchQuery.toLowerCase()) &&
+        shouldFilterPage(p, this.filters.filters)
+    );
+    filteredPages = orderPages(filteredPages, this.filters.sortKey, this.filters.sortBy);
+
+    const filteredPageIds = new Set(filteredPages.map((page) => page.id).filter(Boolean) as string[]);
+    const childrenByParent = new Map<string | null, string[]>();
+
+    for (const page of filteredPages) {
+      if (!page.id) continue;
+      const parentId = page.parent ?? null;
+      const siblings = childrenByParent.get(parentId) ?? [];
+      siblings.push(page.id);
+      childrenByParent.set(parentId, siblings);
+    }
+
+    const orderedTree: Array<{ pageId: string; depth: number }> = [];
+    const visited = new Set<string>();
+
+    const visit = (pageId: string, depth: number) => {
+      if (visited.has(pageId)) return;
+      visited.add(pageId);
+      orderedTree.push({ pageId, depth });
+
+      const childIds = childrenByParent.get(pageId) ?? [];
+      for (const childId of childIds) {
+        visit(childId, depth + 1);
+      }
+    };
+
+    for (const page of filteredPages) {
+      if (!page.id) continue;
+      const parentId = page.parent ?? null;
+      if (!parentId || !filteredPageIds.has(parentId)) {
+        visit(page.id, 0);
+      }
+    }
+
+    for (const page of filteredPages) {
+      if (!page.id) continue;
+      visit(page.id, 0);
+    }
+
+    return orderedTree;
   });
 
   /**

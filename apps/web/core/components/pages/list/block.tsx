@@ -20,12 +20,13 @@ import type { EPageStoreType } from "@/plane-web/hooks/store";
 import { usePage } from "@/plane-web/hooks/store";
 
 type TPageListBlock = {
+  depth: number;
   pageId: string;
   storeType: EPageStoreType;
 };
 
 export const PageListBlock = observer(function PageListBlock(props: TPageListBlock) {
-  const { pageId, storeType } = props;
+  const { depth, pageId, storeType } = props;
   // refs
   const parentRef = useRef(null);
   // hooks
@@ -42,13 +43,13 @@ export const PageListBlock = observer(function PageListBlock(props: TPageListBlo
   return (
     <ListItem
       prependTitleElement={
-        <>
+        <div className="flex items-center" style={{ marginLeft: `${depth * 20}px` }}>
           {logo_props?.in_use ? (
             <Logo logo={logo_props} size={16} type="lucide" />
           ) : (
             <PageIcon className="h-4 w-4 text-tertiary" />
           )}
-        </>
+        </div>
       }
       title={getPageName(name)}
       itemLink={getRedirectionLink()}

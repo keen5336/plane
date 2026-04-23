@@ -64,7 +64,12 @@ x-app-env: &app-env
 
 services:
   web:
-    image: makeplane/plane-frontend:${APP_RELEASE:-stable}
+    build:
+      context: ..
+      dockerfile: ./apps/web/Dockerfile.web
+      args:
+        DOCKER_BUILDKIT: 1
+    image: plane-frontend-local:${APP_RELEASE:-stable}
     restart: unless-stopped
     depends_on:
       - api

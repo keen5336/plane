@@ -23,15 +23,16 @@ type TPagesListRoot = {
 export const PagesListRoot = observer(function PagesListRoot(props: TPagesListRoot) {
   const { pageType, storeType } = props;
   // store hooks
-  const { getCurrentProjectFilteredPageIdsByTab } = usePageStore(storeType);
+  const { getCurrentProjectFilteredPageIdsByTab, getCurrentProjectFilteredPageTreeByTab } = usePageStore(storeType);
   // derived values
   const filteredPageIds = getCurrentProjectFilteredPageIdsByTab(pageType);
+  const filteredPageTree = getCurrentProjectFilteredPageTreeByTab(pageType);
 
   if (!filteredPageIds) return <></>;
   return (
     <ListLayout>
-      {filteredPageIds.map((pageId) => (
-        <PageListBlock key={pageId} pageId={pageId} storeType={storeType} />
+      {(filteredPageTree ?? []).map(({ pageId, depth }) => (
+        <PageListBlock key={pageId} depth={depth} pageId={pageId} storeType={storeType} />
       ))}
     </ListLayout>
   );
