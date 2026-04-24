@@ -469,7 +469,13 @@ function MenuItem(props: ICustomMenuItemProps) {
             },
             className
           )}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
           onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
             close();
             onClick?.(e);
             // Close submenu if this item is inside a submenu
