@@ -40,7 +40,11 @@ export const BlockItemAction = observer(function BlockItemAction(props: Props) {
   const ownerDetails = owned_by ? getUserDetails(owned_by) : undefined;
 
   return (
-    <>
+    <div
+      className="relative flex w-full flex-shrink-0 flex-wrap items-center justify-start gap-4 lg:w-auto lg:flex-shrink-0 lg:flex-nowrap xl:w-auto xl:flex-shrink-0 xl:flex-nowrap"
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+    >
       {/* page details */}
       <div className="cursor-default">
         <Tooltip tooltipHeading="Owned by" tooltipContent={ownerDetails?.display_name}>
@@ -90,6 +94,6 @@ export const BlockItemAction = observer(function BlockItemAction(props: Props) {
         parentRef={parentRef}
         storeType={storeType}
       />
-    </>
+    </div>
   );
 });
