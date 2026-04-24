@@ -106,6 +106,8 @@ export function ListItem(props: IListItemProps) {
               },
               actionItemContainerClassName
             )}
+            onClickCapture={(event) => event.stopPropagation()}
+            onMouseDownCapture={(event) => event.stopPropagation()}
           >
             {actionableItems}
           </div>

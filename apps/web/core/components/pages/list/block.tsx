@@ -6,7 +6,7 @@
 
 import { useRef } from "react";
 import { observer } from "mobx-react";
-import { CornerDownRight } from "lucide-react";
+import { ChevronDown, ChevronRight, CornerDownRight } from "lucide-react";
 import { Logo } from "@plane/propel/emoji-icon-picker";
 import { PageIcon } from "@plane/propel/icons";
 // plane imports
@@ -22,12 +22,15 @@ import { usePage } from "@/plane-web/hooks/store";
 
 type TPageListBlock = {
   depth: number;
+  hasChildren: boolean;
+  isCollapsed: boolean;
+  onToggleCollapse?: () => void;
   pageId: string;
   storeType: EPageStoreType;
 };
 
 export const PageListBlock = observer(function PageListBlock(props: TPageListBlock) {
-  const { depth, pageId, storeType } = props;
+  const { depth, hasChildren, isCollapsed, onToggleCollapse, pageId, storeType } = props;
   // refs
   const parentRef = useRef(null);
   // hooks
@@ -46,6 +49,22 @@ export const PageListBlock = observer(function PageListBlock(props: TPageListBlo
     <ListItem
       prependTitleElement={
         <div className="flex items-center" style={{ marginLeft: `${depth * 20}px` }}>
+          {hasChildren ? (
+            <button
+              type="button"
+              className="mr-1 flex h-4 w-4 items-center justify-center rounded-sm text-tertiary hover:bg-layer-transparent-hover"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onToggleCollapse?.();
+              }}
+              aria-label={isCollapsed ? "Expand subpages" : "Collapse subpages"}
+            >
+              {isCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </button>
+          ) : (
+            <span className="mr-1 h-4 w-4" />
+          )}
           {isSubpage && <CornerDownRight className="mr-2 h-3.5 w-3.5 text-tertiary" />}
           {logo_props?.in_use ? (
             <Logo logo={logo_props} size={16} type="lucide" />
