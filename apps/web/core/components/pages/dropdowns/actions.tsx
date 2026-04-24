@@ -194,7 +194,9 @@ export const PageActions = observer(function PageActions(props: Props) {
           return (
             <CustomMenu.MenuItem
               key={item.key}
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 item.action?.();
               }}
               className={cn("flex items-center gap-2", item.className)}
